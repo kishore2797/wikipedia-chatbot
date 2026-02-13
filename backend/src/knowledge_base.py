@@ -46,16 +46,14 @@ class KnowledgeBase:
                 )
                 documents.append(doc)
         
-        # Create or update vectorstore
+        # Create or update vectorstore using the existing client
         if self.vectorstore is None:
-            self.vectorstore = Chroma.from_documents(
-                documents=documents,
-                embedding=self.embeddings,
-                persist_directory=self.persist_directory,
+            self.vectorstore = Chroma(
+                client=self.client,
                 collection_name=self.collection_name,
+                embedding_function=self.embeddings,
             )
-        else:
-            self.vectorstore.add_documents(documents)
+        self.vectorstore.add_documents(documents)
         
         print(f"Added {len(documents)} document chunks to knowledge base")
     
@@ -91,9 +89,9 @@ class KnowledgeBase:
             # Try to load existing vectorstore
             try:
                 self.vectorstore = Chroma(
-                    persist_directory=self.persist_directory,
-                    embedding_function=self.embeddings,
+                    client=self.client,
                     collection_name=self.collection_name,
+                    embedding_function=self.embeddings,
                 )
             except Exception as e:
                 print(f"Error loading vectorstore: {e}")
@@ -107,9 +105,11 @@ class KnowledgeBase:
     def clear(self):
         """Clear the knowledge base."""
         try:
-            self.client.delete_collection(self.collection_name)
+            existing = [c.name for c in self.client.list_collections()]
+            if self.collection_name in existing:
+                self.client.delete_collection(self.collection_name)
+                print("Knowledge base cleared")
             self.vectorstore = None
-            print("Knowledge base cleared")
         except Exception as e:
             print(f"Error clearing knowledge base: {e}")
     
