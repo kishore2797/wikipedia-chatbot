@@ -1,12 +1,53 @@
-# Wikipedia Chatbot
+# 🤖 Wikipedia Chatbot
 
-A full-stack app that fetches Wikipedia articles on any topic, builds a searchable vector knowledge base, and answers factual questions with source citations.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/FastAPI-0.109+-009688?style=flat-square&logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/ChromaDB-0.4+-FF6F00?style=flat-square" />
+</p>
 
-## Architecture
+> **RAG over live Wikipedia** — Fetch articles on any topic, build a searchable knowledge base, and answer factual questions with source citations.
+
+Part of the [Mastering RAG](https://github.com/kishore2797/mastering-rag) ecosystem → tutorial: [rag-06-wikipedia-chatbot](https://github.com/kishore2797/rag-06-wikipedia-chatbot).
+
+---
+
+## 🌍 Real-World Scenario
+
+> A teacher wants a classroom assistant that students can ask about any topic. Unlike ChatGPT, it should **cite Wikipedia sources** so students can verify facts. Add "Photosynthesis," "World War II," or "Python programming" as topics; students ask questions and get answers from those articles — every claim traceable to a source URL.
+
+---
+
+## 🏗️ What You'll Build
+
+A full-stack chatbot that fetches Wikipedia articles on any topic, builds a vector knowledge base, and answers questions with source citations. Works with **live, evolving data** instead of static files.
+
+```
+"Add topic: Quantum Computing" ──→ Fetch Wikipedia ──→ Chunk & embed ──→ Store
+                                                                          ↓
+"How do quantum gates work?" ──→ Retrieve from KB ──→ Answer + citations
+```
+
+## 🔑 Key Concepts
+
+- **Dynamic data ingestion** — Fetch and index from live APIs (Wikipedia), not just static files
+- **Knowledge base management** — Add/remove topics, track what's indexed
+- **Multi-topic retrieval** — Search across multiple Wikipedia articles at once
+- **Citation generation** — Every answer links back to the Wikipedia source URL
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Backend | Python 3.11+ · FastAPI · Wikipedia API · ChromaDB · Sentence-Transformers · OpenAI |
+| Frontend | React 19 · Vite · Tailwind CSS · Lucide Icons |
+
+## 📁 Project Structure
 
 ```
 wikipedia-chatbot/
-├── backend/                # Python FastAPI server
+├── backend/
 │   ├── web_app.py          # API server (port 8000)
 │   ├── main.py             # CLI mode
 │   ├── requirements.txt
@@ -15,10 +56,10 @@ wikipedia-chatbot/
 │       ├── wiki_fetcher.py     # Wikipedia article fetching
 │       ├── knowledge_base.py   # ChromaDB vector store
 │       └── chatbot.py          # OpenAI Q&A with citations
-├── frontend/               # React + Vite + TailwindCSS
+├── frontend/
 │   ├── src/
 │   │   ├── App.jsx
-│   │   ├── api/client.js       # API client
+│   │   ├── api/client.js
 │   │   └── components/
 │   │       ├── TopicBuilder.jsx
 │   │       ├── ChatInterface.jsx
@@ -27,26 +68,19 @@ wikipedia-chatbot/
 └── README.md
 ```
 
-## Tech Stack
+## 🚀 Quick Start
 
-- **Frontend**: React 19, Vite, TailwindCSS, Lucide Icons
-- **Backend**: FastAPI, LangChain, OpenAI GPT
-- **Database**: ChromaDB (vector store) with sentence-transformers embeddings
-- **Data Source**: Wikipedia API
-
-## Quick Start
-
-### 1. Backend
+### Backend
 
 ```bash
 cd backend
-python -m venv venv && source venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # Add your OPENAI_API_KEY
-python web_app.py
+uvicorn web_app:app --reload --port 8000
 ```
 
-### 2. Frontend
+### Frontend
 
 ```bash
 cd frontend
@@ -54,17 +88,9 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** in your browser.
+Open **http://localhost:5173** — add topics, build your knowledge base, and chat with citations.
 
-## How It Works
-
-1. **Search** — Enter a topic, the app searches Wikipedia for related articles
-2. **Index** — Articles are chunked, embedded with `all-MiniLM-L6-v2`, and stored in ChromaDB
-3. **Ask** — Type a question; relevant chunks are retrieved via semantic search
-4. **Answer** — OpenAI GPT synthesizes an answer with `[Source: Article (URL)]` citations
-5. **Cite** — Every response shows clickable Wikipedia source links with relevance scores
-
-## API Endpoints
+## 🔌 API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
@@ -74,3 +100,11 @@ Open **http://localhost:5173** in your browser.
 | POST | `/api/ask` | Ask a question |
 | GET | `/api/history` | Conversation history |
 | DELETE | `/api/history` | Clear history |
+
+## 📖 How It Works
+
+1. **Search** — Enter a topic; the app searches Wikipedia for related articles
+2. **Index** — Articles are chunked, embedded with `all-MiniLM-L6-v2`, and stored in ChromaDB
+3. **Ask** — Type a question; relevant chunks are retrieved via semantic search
+4. **Answer** — OpenAI GPT synthesizes an answer with `[Source: Article (URL)]` citations
+5. **Cite** — Every response shows clickable Wikipedia source links
